@@ -28,9 +28,11 @@ class ToyRobot
 
     @current_x_val = current_x_val
     @current_y_val = current_y_val
-    update_orientation(orientation)
 
     set_command_map
+
+    update_orientation(orientation) unless !orientation
+    update_matrix(@current_x_val,@current_y_val) unless !(@current_x_val && @current_y_val)
 
     ask_for_command
   end
@@ -222,6 +224,7 @@ class ToyRobot
 
 end
 
+# @toy_robot = ToyRobot.new(12,2,3,1,"SOUTH")
 @toy_robot = ToyRobot.new
 
 
