@@ -9,8 +9,8 @@ class ToyRobot
                  "REPORT" => nil}
 
   ORIENTATION = {"NORTH" => false, "SOUTH" => false, "EAST" => false, "WEST" => false}
-  OIRENTATION_90_LEFT = {"NORTH" => "WEST", "SOUTH" => "EAST", "EAST" => "NORTH", "WEST" => "SOUTH"}
-  OIRENTATION_90_RIGHT = {"NORTH" => "EAST", "SOUTH" => "WEST", "EAST" => "SOUTH", "WEST" => "NORTH"}
+  ORIENTATION_90_LEFT = {"NORTH" => "WEST", "SOUTH" => "EAST", "EAST" => "NORTH", "WEST" => "SOUTH"}
+  ORIENTATION_90_RIGHT = {"NORTH" => "EAST", "SOUTH" => "WEST", "EAST" => "SOUTH", "WEST" => "NORTH"}
 
   MATRIX_MARKER = {"NORTH" => "\u21d1", "SOUTH" => "\u21d3", "EAST" => "\u21d2", "WEST" => "\u21d0"}
 
@@ -189,13 +189,13 @@ class ToyRobot
 
   def turn_left
     orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(OIRENTATION_90_LEFT[orientation])
+    update_orientation(ORIENTATION_90_LEFT[orientation])
     update_matrix(@current_x_val,@current_y_val)
   end
 
   def turn_right
     orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(OIRENTATION_90_RIGHT[orientation])
+    update_orientation(ORIENTATION_90_RIGHT[orientation])
     update_matrix(@current_x_val,@current_y_val)
   end
 
