@@ -150,13 +150,13 @@ PTY.spawn('ruby ./toy_robot.rb') do |stdout, stdin, pid|
   print_divider_line
 
   command_6c = "REPORT"
-  puts `echo "Let's use the #{command_6b} command to check that the Toy Robot is no longer in the SOUTH-WEST corner of the table."`
+  puts `echo "Let's use the #{command_6c} command to check that the Toy Robot is no longer in the SOUTH-WEST corner of the table."`
 
   print_divider_line("bottom")
   #######################################################################################
   count_down
 
-  stdin.puts command_6
+  stdin.puts command_6c
 
   13.times do |n|
     puts stdout.gets
@@ -183,14 +183,14 @@ PTY.spawn('ruby ./toy_robot.rb') do |stdout, stdin, pid|
   ###########################################
   print_divider_line
 
-  command_6b = "MOVE"
-  puts `echo "Now let's #{command_6b} EAST by 1 unit..."`
+  command_7a = "MOVE"
+  puts `echo "Now let's #{command_7a} EAST by 1 unit..."`
 
   print_divider_line("bottom")
   #######################################################################################
   count_down
 
-  stdin.puts command_6b
+  stdin.puts command_7a
 
   3.times do |n|
     puts stdout.gets
