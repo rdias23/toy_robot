@@ -1,5 +1,5 @@
-require 'pry'
-require 'rb-readline'
+#require 'pry'
+#require 'rb-readline'
 
 class ToyRobot
   COMMAND_MAP = {"PLACE" => [],
