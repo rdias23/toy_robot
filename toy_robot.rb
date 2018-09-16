@@ -32,7 +32,7 @@ class ToyRobot
     set_command_map
 
     update_orientation(orientation) unless !orientation
-    update_matrix(@current_x_val,@current_y_val) unless !(@current_x_val || @current_y_val)
+    update_matrix(@current_x_val,@current_y_val) unless (!@current_x_val || !@current_y_val)
 
     ask_for_command
   end
