@@ -19,7 +19,7 @@ class ToyRobot
                       place: "You must place the robot ON the table!",
                       move: "That move would have pushed the robot off the table!"}
 
-  def initialize(x_axis_length=5,y_axis_length=5,current_x_val=nil,current_y_val=nil,orientation=nil)
+  def initialize x_axis_length = 5, y_axis_length = 5, current_x_val = nil, current_y_val = nil, orientation = nil
     @x_axis_length = x_axis_length
     @y_axis_length = y_axis_length
     INVALID_CMD_MSGS[:place] += " (The table is #{@x_axis_length} units wide and #{@y_axis_length} units long)"
@@ -62,7 +62,7 @@ class ToyRobot
     process_command(command)
   end
 
-  def process_command(command)
+  def process_command command
     # command_base examples... PLACE MOVE LEFT RIGHT REPORT
     command_base = command.split(" ")[0].upcase
     # command_spec is ignored if not applicable (i.e. !command_spec_applicable?(command_base) )
@@ -96,15 +96,15 @@ class ToyRobot
     ask_for_command
   end
 
-  def command_exists?(command)
+  def command_exists? command
     COMMAND_MAP.keys.include?(command)
   end
 
-  def command_spec_applicable?(command)
+  def command_spec_applicable? command
     command_exists?(command) && COMMAND_MAP[command]
   end
 
-  def command_spec_exists?(command,command_spec)
+  def command_spec_exists? command, command_spec
     if command_exists?(command) && command_spec_applicable?(command)
       COMMAND_MAP[command].include?(command_spec)
     else
@@ -112,7 +112,7 @@ class ToyRobot
     end
   end
 
-  def place (command_spec)
+  def place command_spec
     x_pos = command_spec.split(",")[0].to_i
     y_pos = command_spec.split(",")[1].to_i
 
@@ -123,7 +123,7 @@ class ToyRobot
     update_matrix(x_pos, y_pos)
   end
 
-  def report (command_spec = nil)
+  def report command_spec = nil
     puts ""
     puts "#{self.print_current_x_val},#{self.print_current_y_val},#{self.print_current_orientation}"
     puts ""
@@ -131,7 +131,7 @@ class ToyRobot
     puts ""
   end
 
-  def move (command_spec = nil)
+  def move command_spec = nil
     case self.move_axis_val
     when "@current_x_val"
       if !valid_x_coord?(instance_eval("#{@current_x_val} #{self.move_operator} 1"))
@@ -148,19 +148,19 @@ class ToyRobot
     end
   end
 
-  def left (command_spec = nil)
+  def left command_spec = nil
     orientation = ORIENTATION.find { |k,v| v == true }[0]
     update_orientation(ORIENTATION_90_LEFT[orientation])
     update_matrix(@current_x_val,@current_y_val)
   end
 
-  def right (command_spec = nil)
+  def right command_spec = nil
     orientation = ORIENTATION.find { |k,v| v == true }[0]
     update_orientation(ORIENTATION_90_RIGHT[orientation])
     update_matrix(@current_x_val,@current_y_val)
   end
 
-  def update_matrix(x_pos, y_pos)
+  def update_matrix x_pos, y_pos
     @current_x_val = x_pos
     @current_y_val = y_pos
 
@@ -180,12 +180,12 @@ class ToyRobot
     @matrix.map! { |arr| arr.map! { |val| nil } }
   end
 
-  def valid_x_coord?(x_coord)
-    return (x_coord <= @x_axis_length && x_coord >= 0)
+  def valid_x_coord? x_coord
+    (x_coord <= @x_axis_length && x_coord >= 0)
   end
 
-  def valid_y_coord?(y_coord)
-    return (y_coord <= @y_axis_length && y_coord >= 0)
+  def valid_y_coord? y_coord
+    (y_coord <= @y_axis_length && y_coord >= 0)
   end
 
   def move_operator
@@ -198,7 +198,7 @@ class ToyRobot
     ["NORTH","SOUTH"].include?(orientation) ? "@current_y_val": "@current_x_val"
   end
 
-  def update_orientation(orientation)
+  def update_orientation orientation
     ORIENTATION.each { |k,v| k == orientation ? ORIENTATION[k] = true : ORIENTATION[k] = false }
   end
 
@@ -214,20 +214,17 @@ class ToyRobot
     @current_y_val ? @current_y_val : "Y value not set"
   end
 
-  def print_invalid_command(msg_key=:invalid)
+  def print_invalid_command msg_key = :invalid
     puts "-" * 11 + ">"
     puts "#{INVALID_CMD_MSGS[msg_key]} Try Again."
     puts "-" * 11 + ">"
   end
 
   def robot_on_table?
-    (ORIENTATION.find { |k,v| v == true } && @current_x_val && @current_y_val) ?
-      true : false
+    (ORIENTATION.find { |k,v| v == true } && @current_x_val && @current_y_val) ? true : false
   end
 
 end
 
 # @toy_robot = ToyRobot.new(12,2,3,1,"SOUTH")
 @toy_robot = ToyRobot.new
-
-
