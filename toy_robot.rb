@@ -47,7 +47,7 @@ class ToyRobot
                              possible_y_values.map { |y_val| n + "," + y_val.to_s }
                            end.flat_map do |n|
                              ORIENTATION.keys.map { |orientation| n + "," + orientation }
-                           end 
+                           end
     # The other commands (e.g. MOVE, LEFT, RIGHT, REPORT) have no accompanying strings now,
     # but they would be set here
   end
@@ -85,14 +85,12 @@ class ToyRobot
         when "@current_x_val"
           if !valid_x_coord?(instance_eval("#{@current_x_val} #{self.move_operator} 1"))
             print_invalid_command(:move)
-            ask_for_command
           else
             update_matrix(instance_eval("#{@current_x_val} #{self.move_operator} 1"), @current_y_val)
           end
         when "@current_y_val"
           if !valid_y_coord?(instance_eval("#{@current_y_val} #{self.move_operator} 1"))
             print_invalid_command(:move)
-            ask_for_command
           else
             update_matrix(@current_x_val, instance_eval("#{@current_y_val} #{self.move_operator} 1"))
           end
@@ -110,7 +108,6 @@ class ToyRobot
       else
       end
 
-      ask_for_command
     else
       if !self.robot_on_table? && command_base == "PLACE" && !self.command_spec_exists?(command_base,command_spec)
         msg_sym = :place
@@ -123,9 +120,9 @@ class ToyRobot
       end
 
       print_invalid_command(msg_sym)
-      ask_for_command
     end
 
+    ask_for_command
   end
 
   def command_exists?(command)
