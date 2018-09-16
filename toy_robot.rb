@@ -71,7 +71,7 @@ class ToyRobot
 
     if (command_exists?(command_base) &&
          (command_spec_exists?(command_base,command_spec) || !command_spec_applicable?(command_base)) &&
-           (robot_on_table? || !robot_on_table? && command_base == "PLACE"))
+           (robot_on_table? || (!robot_on_table? && command_base == "PLACE")))
 
       if command_spec_applicable?(command_base)
         instance_eval(command_base.downcase + "(" + "'" + command_spec + "'" + ")") # PLACE 0,0,NORTH
