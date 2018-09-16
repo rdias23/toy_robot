@@ -1,5 +1,5 @@
-#require 'pry'
-#require 'rb-readline'
+require 'pry'
+require 'rb-readline'
 
 class ToyRobot
   COMMAND_MAP = {"PLACE" => [],
@@ -63,57 +63,28 @@ class ToyRobot
   end
 
   def process_command(command)
+    # command_base examples... PLACE MOVE LEFT RIGHT REPORT
     command_base = command.split(" ")[0].upcase
-    command_spec = command.split(" ")[1...command.split(" ").length].join("").upcase.split(",").map(&:strip).join(",")
+    # command_spec is ignored if not applicable (i.e. !command_spec_applicable?(command_base) )
+    # command_spec example... 0,0,NORTH
+    command_spec = command.split(" ")[1...command.split(" ").length].join("").upcase
 
-    if (self.command_exists?(command_base) &&
-         self.command_spec_exists?(command_base,command_spec) &&
-           (self.robot_on_table? || !self.robot_on_table? && command_base == "PLACE"))
+    if (command_exists?(command_base) &&
+         (command_spec_exists?(command_base,command_spec) || !command_spec_applicable?(command_base)) &&
+           (robot_on_table? || !robot_on_table? && command_base == "PLACE"))
 
-      case command_base
-      when "PLACE"
-        x_pos = command_spec.split(",")[0].to_i
-        y_pos = command_spec.split(",")[1].to_i
-
-        orientation = command_spec.split(",")[2]
-
-        # the matrix needs to know what direction to place the arrow, so orientation should be updated first when PLACEing
-        update_orientation(orientation)
-        update_matrix(x_pos, y_pos)
-      when "MOVE"
-        case self.move_axis_val
-        when "@current_x_val"
-          if !valid_x_coord?(instance_eval("#{@current_x_val} #{self.move_operator} 1"))
-            print_invalid_command(:move)
-          else
-            update_matrix(instance_eval("#{@current_x_val} #{self.move_operator} 1"), @current_y_val)
-          end
-        when "@current_y_val"
-          if !valid_y_coord?(instance_eval("#{@current_y_val} #{self.move_operator} 1"))
-            print_invalid_command(:move)
-          else
-            update_matrix(@current_x_val, instance_eval("#{@current_y_val} #{self.move_operator} 1"))
-          end
-        end
-      when "LEFT"
-        turn_left
-      when "RIGHT"
-        turn_right
-      when "REPORT"
-        puts ""
-        puts "#{self.print_current_x_val},#{self.print_current_y_val},#{self.print_current_orientation}"
-        puts ""
-        print_matrix
-        puts ""
+      if command_spec_applicable?(command_base)
+        instance_eval(command_base.downcase + "(" + "'" + command_spec + "'" + ")") # PLACE 0,0,NORTH
       else
+        instance_eval(command_base.downcase) # MOVE, LEFT, RIGHT, REPORT
       end
 
     else
-      if !self.robot_on_table? && command_base == "PLACE" && !self.command_spec_exists?(command_base,command_spec)
+      if !robot_on_table? && command_base == "PLACE" && !command_spec_exists?(command_base,command_spec)
         msg_sym = :place
-      elsif !self.command_exists?(command_base)
+      elsif !command_exists?(command_base)
         msg_sym = :invalid
-      elsif !self.robot_on_table?
+      elsif !robot_on_table?
         msg_sym = :table
       else
         msg_sym = :invalid
@@ -129,17 +100,64 @@ class ToyRobot
     COMMAND_MAP.keys.include?(command)
   end
 
+  def command_spec_applicable?(command)
+    command_exists?(command) && COMMAND_MAP[command]
+  end
+
   def command_spec_exists?(command,command_spec)
-    if command_exists?(command)
-      case command
-      when "PLACE"
-        COMMAND_MAP["PLACE"].include?(command_spec)
-      else
-        true
-      end
+    if command_exists?(command) && command_spec_applicable?(command)
+      COMMAND_MAP[command].include?(command_spec)
     else
       false
     end
+  end
+
+  def place (command_spec)
+    x_pos = command_spec.split(",")[0].to_i
+    y_pos = command_spec.split(",")[1].to_i
+
+    orientation = command_spec.split(",")[2]
+
+    # the matrix needs to know what direction to place the arrow, so orientation should be updated first when PLACEing
+    update_orientation(orientation)
+    update_matrix(x_pos, y_pos)
+  end
+
+  def report (command_spec = nil)
+    puts ""
+    puts "#{self.print_current_x_val},#{self.print_current_y_val},#{self.print_current_orientation}"
+    puts ""
+    print_matrix
+    puts ""
+  end
+
+  def move (command_spec = nil)
+    case self.move_axis_val
+    when "@current_x_val"
+      if !valid_x_coord?(instance_eval("#{@current_x_val} #{self.move_operator} 1"))
+        print_invalid_command(:move)
+      else
+        update_matrix(instance_eval("#{@current_x_val} #{self.move_operator} 1"), @current_y_val)
+      end
+    when "@current_y_val"
+      if !valid_y_coord?(instance_eval("#{@current_y_val} #{self.move_operator} 1"))
+        print_invalid_command(:move)
+      else
+        update_matrix(@current_x_val, instance_eval("#{@current_y_val} #{self.move_operator} 1"))
+      end
+    end
+  end
+
+  def left (command_spec = nil)
+    orientation = ORIENTATION.find { |k,v| v == true }[0]
+    update_orientation(ORIENTATION_90_LEFT[orientation])
+    update_matrix(@current_x_val,@current_y_val)
+  end
+
+  def right (command_spec = nil)
+    orientation = ORIENTATION.find { |k,v| v == true }[0]
+    update_orientation(ORIENTATION_90_RIGHT[orientation])
+    update_matrix(@current_x_val,@current_y_val)
   end
 
   def update_matrix(x_pos, y_pos)
@@ -182,18 +200,6 @@ class ToyRobot
 
   def update_orientation(orientation)
     ORIENTATION.each { |k,v| k == orientation ? ORIENTATION[k] = true : ORIENTATION[k] = false }
-  end
-
-  def turn_left
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(ORIENTATION_90_LEFT[orientation])
-    update_matrix(@current_x_val,@current_y_val)
-  end
-
-  def turn_right
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(ORIENTATION_90_RIGHT[orientation])
-    update_matrix(@current_x_val,@current_y_val)
   end
 
   def print_current_orientation
