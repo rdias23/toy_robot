@@ -52,6 +52,18 @@ class ToyRobot
     # but they would be set here
   end
 
+  def orientation_key
+    ORIENTATION.find { |k,v| v == true } ? ORIENTATION.find { |k,v| v == true }[0] : "NORTH"
+  end
+
+  def print_current_orientation
+    ORIENTATION.find { |k,v| v == true } ? ORIENTATION.find { |k,v| v == true }[0] : "Orientation Not Set"
+  end
+
+  def update_orientation orientation
+    ORIENTATION.each { |k,v| k == orientation ? ORIENTATION[k] = true : ORIENTATION[k] = false }
+  end
+
   def ask_for_command
     command = ""
     while command.empty?
@@ -149,14 +161,12 @@ class ToyRobot
   end
 
   def left command_spec = nil
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(ORIENTATION_90_LEFT[orientation])
+    update_orientation(ORIENTATION_90_LEFT[orientation_key])
     update_matrix(@current_x_val,@current_y_val)
   end
 
   def right command_spec = nil
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    update_orientation(ORIENTATION_90_RIGHT[orientation])
+    update_orientation(ORIENTATION_90_RIGHT[orientation_key])
     update_matrix(@current_x_val,@current_y_val)
   end
 
@@ -165,7 +175,6 @@ class ToyRobot
     @current_y_val = y_pos
 
     clear_matrix
-    orientation_key = ORIENTATION.find { |k,v| v == true } ? ORIENTATION.find { |k,v| v == true }[0] : "NORTH"
     @matrix[@current_y_val][@current_x_val] = MATRIX_MARKER[orientation_key].encode('utf-8')
   end
 
@@ -189,21 +198,11 @@ class ToyRobot
   end
 
   def move_operator
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    ["NORTH","EAST"].include?(orientation) ? "+": "-"
+    ["NORTH","EAST"].include?(orientation_key) ? "+": "-"
   end
 
   def move_axis_val
-    orientation = ORIENTATION.find { |k,v| v == true }[0]
-    ["NORTH","SOUTH"].include?(orientation) ? "@current_y_val": "@current_x_val"
-  end
-
-  def update_orientation orientation
-    ORIENTATION.each { |k,v| k == orientation ? ORIENTATION[k] = true : ORIENTATION[k] = false }
-  end
-
-  def print_current_orientation
-    ORIENTATION.find { |k,v| v == true } ? ORIENTATION.find { |k,v| v == true }[0] : "Orientation Not Set"
+    ["NORTH","SOUTH"].include?(orientation_key) ? "@current_y_val": "@current_x_val"
   end
 
   def print_current_x_val
